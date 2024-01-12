@@ -1,0 +1,50 @@
+on:
+  schedule:
+    - cron: '@daily'
+
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  publish:
+    runs-on: self-hosted
+    steps:
+      - name: find missing version
+        id: forgejo-version
+        shell: bash
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get -qq update && apt-get -q install -y -qq curl jq wget
+          function get_versions() {
+             local host=$1
+             curl -sS https://$host/api/v1/repos/forgejo/forgejo/releases | jq -r '.[] | .tag_name' | sort
+          }
+          get_versions codeberg.org > /tmp/codeberg
+          get_versions code.forgejo.org > /tmp/forgejo
+          version=$(comm -23 /tmp/codeberg /tmp/forgejo | head -1)
+          if test "$version" ; then
+             echo $version is missing
+             echo value=$version >> $GITHUB_OUTPUT
+          else
+             echo all versions have been copied already
+             cat /tmp/codeberg
+          fi
+
+      - uses: actions/checkout@v3
+
+      - name: copy missing version
+        if: steps.forgejo-version.outputs.value != ''
+        uses: ./.forgejo/publish
+        with:
+          forgejo: https://codeberg.org
+          from-owner: forgejo
+          to-forgejo: https://code.forgejo.org
+          to-owner: forgejo
+          repo: forgejo
+          ref-name: ${{ steps.forgejo-version.outputs.value }}
+          release-notes: "See https://codeberg.org/forgejo/forgejo/src/branch/forgejo/RELEASE-NOTES.md#{ANCHOR}"
+          doer: forgejo-mirror
+          token: ${{ secrets.CODEBERG_TOKEN }}
+          to-token: ${{ secrets.CODE_FORGEJO_TOKEN }}
+          verbose: ${{ vars.VERBOSE }}
