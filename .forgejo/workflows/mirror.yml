@@ -1,4 +1,7 @@
 on:
+  schedule:
+    - cron: '@daily'
+
   push:
     branches:
       - 'main'
