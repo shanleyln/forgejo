@@ -18,7 +18,7 @@ jobs:
           apt-get -qq update && apt-get -q install -y -qq curl jq wget
           function get_versions() {
              local host=$1
-             curl -sS https://$host/api/v1/repos/forgejo/forgejo/releases | jq -r '.[] | .tag_name' | sort
+             curl -sS https://$host/api/v1/repos/forgejo/forgejo/releases | jq -r '.[] | .tag_name' | grep -v -e '-rc' | sort
           }
           get_versions codeberg.org > /tmp/codeberg
           get_versions code.forgejo.org > /tmp/forgejo
