@@ -33,6 +33,12 @@ jobs:
 
       - uses: actions/checkout@v3
 
+      - id: forgejo-sha
+        run: |
+          git fetch origin ${{ steps.forgejo-version.outputs.value }}
+          sha=$(git rev-parse FETCH_HEAD)
+          echo "value=$sha" >> "$GITHUB_OUTPUT"
+
       - name: copy missing version
         if: steps.forgejo-version.outputs.value != ''
         uses: ./.forgejo/publish
@@ -43,6 +49,7 @@ jobs:
           to-owner: forgejo
           repo: forgejo
           ref-name: ${{ steps.forgejo-version.outputs.value }}
+          sha: ${{ steps.forgejo-sha.outputs.value }}
           release-notes: "See https://codeberg.org/forgejo/forgejo/src/branch/forgejo/RELEASE-NOTES.md#{ANCHOR}"
           doer: forgejo-mirror
           token: ${{ secrets.CODEBERG_TOKEN }}
