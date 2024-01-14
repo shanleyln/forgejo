@@ -1,0 +1,1 @@
+Read-only mirror of the Forgejo releases and git repository. The [instructions to get Forgejo](https://forgejo.org/download/) work exactly the same when replacing **codeberg.org** with **code.forgejo.org**.
