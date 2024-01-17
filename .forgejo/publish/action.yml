@@ -124,7 +124,8 @@ runs:
           username: ${{ inputs.doer }}
           password: ${{ inputs.to-token }}
 
-    - uses: https://code.forgejo.org/forgejo/forgejo-container-image@v2
+      # 79f254215ddbe81f347b03cb8c79e534654ddf16 is v2 but avoid cache
+    - uses: https://code.forgejo.org/forgejo/forgejo-container-image@79f254215ddbe81f347b03cb8c79e534654ddf16
       env:
         VERIFY: 'false'
       with:
