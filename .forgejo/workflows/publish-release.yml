@@ -33,14 +33,19 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - id: forgejo-sha
+      - name: get the SHA of the version
+        id: forgejo-sha
         run: |
-          git fetch origin ${{ steps.forgejo-version.outputs.value }}
-          sha=$(git rev-parse FETCH_HEAD)
+          set -x
+          # it may fail if the mirror of the git repository was not done yet and
+          # the tag is still missing, it will happen the next day
+          if git fetch origin ${{ steps.forgejo-version.outputs.value }} ; then
+            sha=$(git rev-parse FETCH_HEAD)
+          fi
           echo "value=$sha" >> "$GITHUB_OUTPUT"
 
       - name: copy missing version
-        if: steps.forgejo-version.outputs.value != ''
+        if: steps.forgejo-version.outputs.value != '' && steps.forgejo-sha.outputs.value != ''
         uses: ./.forgejo/publish
         with:
           forgejo: https://codeberg.org
