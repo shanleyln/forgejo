@@ -1,3 +1,10 @@
+#
+# secrets.CODEBERG_TOKEN
+#   codeberg.org/forgejo-release-mirror user - token FORGEJO_TOKEN https://code.forgejo.org/forgejo/forgejo - read:all
+#
+# secrets.CODE_FORGEJO_TOKEN
+#   code.forgejo.org/forgejo-mirror user - token CODE_FORGEJO_TOKEN https://code.forgejo.org/forgejo/forgejo - write:package, write:repository, read:user
+#
 on:
   schedule:
     - cron: '@daily'
