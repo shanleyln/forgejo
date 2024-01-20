@@ -39,8 +39,10 @@ jobs:
           fi
 
       - uses: actions/checkout@v3
+        if: steps.forgejo-version.outputs.value != ''
 
       - name: get the SHA of the version
+        if: steps.forgejo-version.outputs.value != ''
         id: forgejo-sha
         run: |
           set -x
@@ -53,9 +55,9 @@ jobs:
 
       - name: copy missing version
         if: steps.forgejo-version.outputs.value != '' && steps.forgejo-sha.outputs.value != ''
-        uses: ./.forgejo/publish
+        uses: https://code.forgejo.org/forgejo/forgejo-build-publish/publish@v2
         with:
-          forgejo: https://codeberg.org
+          from-forgejo: https://codeberg.org
           from-owner: forgejo
           to-forgejo: https://code.forgejo.org
           to-owner: forgejo
@@ -63,7 +65,7 @@ jobs:
           ref-name: ${{ steps.forgejo-version.outputs.value }}
           sha: ${{ steps.forgejo-sha.outputs.value }}
           release-notes: "See https://codeberg.org/forgejo/forgejo/src/branch/forgejo/RELEASE-NOTES.md#{ANCHOR}"
-          doer: forgejo-mirror
-          token: ${{ secrets.CODEBERG_TOKEN }}
+          from-token: ${{ secrets.CODEBERG_TOKEN }}
+          to-doer: forgejo-mirror
           to-token: ${{ secrets.CODE_FORGEJO_TOKEN }}
           verbose: ${{ vars.VERBOSE }}
