@@ -34,6 +34,8 @@
 #   `set -x` or nothing
 #
 on:
+  workflow_dispatch:
+
   schedule:
     - cron: '@hourly'
 
