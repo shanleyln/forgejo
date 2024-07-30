@@ -68,7 +68,7 @@ jobs:
             }
             get_versions codeberg.org > /tmp/codeberg
             get_versions code.forgejo.org > /tmp/forgejo
-            version=$(comm -23 /tmp/codeberg /tmp/forgejo | head -1)
+            version=$(comm -23 /tmp/codeberg /tmp/forgejo | head -1 | sed -e 's/^v//')
           else
             version="${{ vars.TEST_VERSION }}"
           fi
