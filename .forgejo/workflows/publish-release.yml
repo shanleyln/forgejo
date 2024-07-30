@@ -64,7 +64,7 @@ jobs:
           if test -z "${{ vars.TEST_VERSION }}" ; then
             function get_versions() {
                local host=$1
-               curl -sS https://$host/api/v1/repos/forgejo/forgejo/releases?limit=100 | jq -r '.[] | .tag_name' | grep -v -e '-rc' | sort
+               curl -sS https://$host/api/v1/repos/forgejo/forgejo/releases?limit=100 | jq -r '.[] | .tag_name' | grep -v -e '-rc' | sort --version-sort
             }
             get_versions codeberg.org > /tmp/codeberg
             get_versions code.forgejo.org > /tmp/forgejo
