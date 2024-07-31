@@ -14,12 +14,12 @@ jobs:
     container:
       image: 'code.forgejo.org/oci/debian:bookworm'
     steps:
-      - name: install curl jq skopeo
+      - name: install wget curl jq skopeo git
         shell: bash
         run: |
           ${{ vars.VERBOSE }}
           export DEBIAN_FRONTEND=noninteractive
-          apt-get -qq update && apt-get -q install -y -qq curl jq skopeo
+          apt-get -qq update && apt-get -q install -y -qq wget curl jq skopeo git
 
       - name: find the first missing version
         id: forgejo-version
@@ -39,8 +39,10 @@ jobs:
           fi
           if test "$version" ; then
              echo $version is missing
+             sha=$(git ls-remote https://codeberg.org/forgejo/forgejo refs/tags/v$version | sed -e 's/\t.*//')
              major_version=$(echo $version | sed -E -e 's/^([0-9]+).*/\1/')
              minor_version=$(echo $version | sed -E -e 's/^([0-9]+\.[0-9]+).*/\1/')
+             echo sha=$sha >> $GITHUB_OUTPUT
              echo patch=$version >> $GITHUB_OUTPUT
              echo minor=$minor_version >> $GITHUB_OUTPUT
              if dpkg --compare-versions $version ge 7.0.0 ; then # prior to v7.0.0 there was no major short tag
@@ -63,3 +65,28 @@ jobs:
               skopeo copy docker://codeberg.org/forgejo/$image docker://${{ vars.TEST == 'true' && vars.TEST_DESTINATION || vars.DESTINATION }}/${{ vars.TEST == 'true' && vars.TEST_OWNER || vars.OWNER }}/$image --all
             done
           done
+
+
+      - name: download release
+        if: steps.forgejo-version.outputs.patch != ''
+        uses: https://code.forgejo.org/actions/forgejo-release@v2
+        with:
+          url: https://codeberg.org
+          repo: forgejo/forgejo
+          direction: download
+          tag: v${{ steps.forgejo-version.outputs.patch }}
+          release-dir: release
+          verbose: ${{ vars.TEST }}
+
+      - name: upload release
+        if: steps.forgejo-version.outputs.patch != ''
+        uses: https://code.forgejo.org/actions/forgejo-release@v2
+        with:
+          url: https://${{ vars.TEST == 'true' && vars.TEST_DESTINATION || vars.DESTINATION }}
+          repo: ${{ vars.TEST == 'true' && vars.TEST_OWNER || vars.OWNER }}/forgejo
+          direction: upload
+          tag: v${{ steps.forgejo-version.outputs.patch }}
+          sha: ${{ steps.forgejo-version.outputs.sha }}
+          release-dir: release
+          token: ${{ vars.TEST == 'true' && secrets.TEST_FORGEJO_TOKEN || secrets.CODE_FORGEJO_TOKEN  }}
+          verbose: ${{ vars.TEST }}
