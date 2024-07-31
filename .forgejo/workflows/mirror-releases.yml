@@ -51,7 +51,7 @@ jobs:
              cat /tmp/codeberg
           fi
 
-      - name: copy missing version image
+      - name: copy missing container image
         if: steps.forgejo-version.outputs.patch != ''
         run: |
           ${{ vars.VERBOSE }}
@@ -66,7 +66,7 @@ jobs:
             destination=${{ vars.TEST_DESTINATION }}
             owner=${{ vars.TEST_OWNER }}
           fi
-          skopeo login --username $doer --password "$token" $destination
+          skopeo login --username $doer --password "${{ vars.TEST == true && secrets.TEST_FORGEJO_TOKEN || secrets.CODE_FORGEJO_TOKEN  }}" $destination
           set -x
           for version in ${{ steps.forgejo-version.outputs.patch }} ${{ steps.forgejo-version.outputs.minor }} ${{ steps.forgejo-version.outputs.major }} ; do
             for suffix in "" "-rootless" ; do

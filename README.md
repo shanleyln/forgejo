@@ -32,5 +32,5 @@ vars.TEST_VERSION
   if set force a mirror of this version regardless - e.g. 7.0.5
 
 vars.VERBOSE
-  `set -x` or nothing
+  `set -x` or `# set -x`
 
