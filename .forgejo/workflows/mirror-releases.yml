@@ -54,24 +54,12 @@ jobs:
       - name: copy missing container image
         if: steps.forgejo-version.outputs.patch != ''
         run: |
-          ${{ vars.VERBOSE }}
-          if test "${{ vars.TEST }}" != true ; then
-            token=${{ secrets.CODE_FORGEJO_TOKEN }}
-            doer=${{ vars.DOER }}
-            destination=${{ vars.DESTINATION }}
-            owner=${{ vars.OWNER }}
-          else
-            token=${{ secrets.TEST_FORGEJO_TOKEN }}
-            doer=${{ vars.TEST_DOER }}
-            destination=${{ vars.TEST_DESTINATION }}
-            owner=${{ vars.TEST_OWNER }}
-          fi
-          skopeo login --username $doer --password "${{ vars.TEST == true && secrets.TEST_FORGEJO_TOKEN || secrets.CODE_FORGEJO_TOKEN  }}" $destination
+          skopeo login --username ${{ vars.TEST == 'true' && vars.TEST_DOER || vars.DOER }} --password "${{ vars.TEST == 'true' && secrets.TEST_FORGEJO_TOKEN || secrets.CODE_FORGEJO_TOKEN  }}" ${{ vars.TEST == 'true' && vars.TEST_DESTINATION || vars.DESTINATION }}
           set -x
           for version in ${{ steps.forgejo-version.outputs.patch }} ${{ steps.forgejo-version.outputs.minor }} ${{ steps.forgejo-version.outputs.major }} ; do
             for suffix in "" "-rootless" ; do
               image=forgejo:${version}${suffix}
               echo $image
-              skopeo copy docker://codeberg.org/forgejo/$image docker://$destination/$owner/$image --all
+              skopeo copy docker://codeberg.org/forgejo/$image docker://${{ vars.TEST == 'true' && vars.TEST_DESTINATION || vars.DESTINATION }}/${{ vars.TEST == 'true' && vars.TEST_OWNER || vars.OWNER }}/$image --all
             done
           done
