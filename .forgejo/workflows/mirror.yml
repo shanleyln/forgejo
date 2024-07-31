@@ -25,4 +25,13 @@ jobs:
             tag=${ref%/forgejo}
             git fetch origin refs/tags/${tag}*:refs/mirror-tags/${tag}*
           done
-          git push --force https://any:$GITHUB_TOKEN@code.forgejo.org/${{ env.GITHUB_REPOSITORY }} refs/mirror/*:refs/heads/* refs/mirror-tags/*:refs/tags/*
+          if test "${{ vars.TEST }}" != true ; then
+            token=${{ secrets.CODE_FORGEJO_TOKEN }}
+            destination=${{ vars.DESTINATION }}
+            owner=${{ vars.OWNER }}
+          else
+            token=${{ secrets.TEST_FORGEJO_TOKEN }}
+            destination=${{ vars.TEST_DESTINATION }}
+            owner=${{ vars.TEST_OWNER }}
+          fi
+          git push --force https://any:$token@$destination/$owner/forgejo refs/mirror/*:refs/heads/* refs/mirror-tags/*:refs/tags/*
