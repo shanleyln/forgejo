@@ -28,12 +28,12 @@ jobs:
           ${{ vars.VERBOSE }}
           if test -z "${{ vars.TEST_VERSION }}" ; then
             function get_versions() {
-               local host=$1
-               curl -sS https://$host/api/v1/repos/forgejo/forgejo/releases?limit=100 | jq -r '.[] | .tag_name' | grep -v -e '-rc' | sort --version-sort
+               local releases=$1
+               curl -sS $releases?limit=100 | jq -r '.[] | .tag_name' | grep -v -e '-rc' | sort --version-sort
             }
-            get_versions codeberg.org > /tmp/codeberg
-            get_versions code.forgejo.org > /tmp/forgejo
-            version=$(comm -23 /tmp/codeberg /tmp/forgejo | head -1 | sed -e 's/^v//')
+            get_versions https://codeberg.org/api/v1/repos/forgejo/forgejo/releases > /tmp/codeberg
+            get_versions https://${{ vars.TEST == 'true' && vars.TEST_DESTINATION || vars.DESTINATION }}/api/v1/repos//${{ vars.TEST == 'true' && vars.TEST_OWNER || vars.OWNER }}/forgejo/releases > /tmp/forgejo
+            version=$(comm --nocheck-order -23 /tmp/codeberg /tmp/forgejo | head -1 | sed -e 's/^v//')
           else
             version="${{ vars.TEST_VERSION }}"
           fi
