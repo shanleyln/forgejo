@@ -1,15 +1,15 @@
+name: mirror
+
 on:
   workflow_dispatch:
 
-  schedule:
-    - cron: '@hourly'
-
-  push:
-    branches:
-      - 'main'
+  issues:
+    types:
+      - labeled
 
 jobs:
-  publish:
+  release:
+    if: contains(github.event.issue.assignees.*.login, 'forgejo-read-only-issues') && github.event.label.name == 'trigger'
     runs-on: docker
     container:
       image: 'code.forgejo.org/oci/debian:bookworm'
@@ -90,3 +90,13 @@ jobs:
           release-dir: release
           token: ${{ vars.TEST == 'true' && secrets.TEST_FORGEJO_TOKEN || secrets.CODE_FORGEJO_TOKEN  }}
           verbose: ${{ vars.TEST }}
+
+      - name: clear the trigger label
+        if: always()
+        uses: https://code.forgejo.org/infrastructure/issue-action/set@v1.0.0
+        with:
+          forgejo: https://${{ vars.DESTINATION }}
+          repository: ${{ vars.OWNER }}/forgejo
+          token: ${{ secrets.LABEL_ISSUE_FORGEJO_MIRROR_TOKEN }}
+          numbers: ${{ github.event.issue.number }}
+          unlabel: trigger
