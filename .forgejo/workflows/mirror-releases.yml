@@ -29,7 +29,7 @@ jobs:
           if test -z "${{ vars.TEST_VERSION }}" ; then
             function get_versions() {
                local releases=$1
-               curl -sS $releases?limit=100 | jq -r '.[] | .tag_name' | grep -v -e '-rc' | sort --version-sort
+               curl --fail -sS $releases?limit=100 | jq -r '.[] | .tag_name' | grep -v -e '-rc' | sort --version-sort
             }
             get_versions https://codeberg.org/api/v1/repos/forgejo/forgejo/releases > /tmp/codeberg
             get_versions https://${{ vars.TEST == 'true' && vars.TEST_DESTINATION || vars.DESTINATION }}/api/v1/repos//${{ vars.TEST == 'true' && vars.TEST_OWNER || vars.OWNER }}/forgejo/releases > /tmp/forgejo
