@@ -8,6 +8,8 @@ on:
     branches:
       - 'main'
 
+enable-email-notifications: true
+
 jobs:
   mirror:
     runs-on: docker
