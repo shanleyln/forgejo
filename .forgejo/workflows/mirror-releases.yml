@@ -11,7 +11,7 @@ enable-email-notifications: true
 
 jobs:
   release:
-    if: contains(github.event.issue.assignees.*.login, 'forgejo-read-only-issues') && github.event.label.name == 'trigger'
+    if: contains(forge.event.issue.assignees.*.login, 'forgejo-read-only-issues') && forge.event.label.name == 'trigger'
     runs-on: docker
     container:
       image: 'code.forgejo.org/oci/debian:bookworm'
@@ -52,11 +52,11 @@ jobs:
              sha=$(git ls-remote https://codeberg.org/forgejo/forgejo refs/tags/v$version | sed -e 's/\t.*//')
              major_version=$(echo $version | sed -E -e 's/^([0-9]+).*/\1/')
              minor_version=$(echo $version | sed -E -e 's/^([0-9]+\.[0-9]+).*/\1/')
-             echo sha=$sha >> $GITHUB_OUTPUT
-             echo patch=$version >> $GITHUB_OUTPUT
-             echo minor=$minor_version >> $GITHUB_OUTPUT
+             echo sha=$sha >> $FORGEJO_OUTPUT
+             echo patch=$version >> $FORGEJO_OUTPUT
+             echo minor=$minor_version >> $FORGEJO_OUTPUT
              if dpkg --compare-versions $version ge 7.0.0 ; then # prior to v7.0.0 there was no major short tag
-               echo major=$major_version >> $GITHUB_OUTPUT
+               echo major=$major_version >> $FORGEJO_OUTPUT
              fi
           else
              echo all versions have been copied already
@@ -108,5 +108,5 @@ jobs:
           forgejo: https://${{ vars.DESTINATION }}
           repository: ${{ vars.OWNER }}/forgejo
           token: ${{ secrets.LABEL_ISSUE_FORGEJO_MIRROR_TOKEN }}
-          numbers: ${{ github.event.issue.number }}
+          numbers: ${{ forge.event.issue.number }}
           unlabel: trigger
