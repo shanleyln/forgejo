@@ -84,7 +84,7 @@ jobs:
           direction: download
           tag: v${{ steps.forgejo-version.outputs.patch }}
           release-dir: release
-          verbose: ${{ vars.TEST }}
+          verbose: true # ${{ vars.TEST }}
 
       - name: upload release
         if: steps.forgejo-version.outputs.patch != ''
@@ -97,7 +97,7 @@ jobs:
           sha: ${{ steps.forgejo-version.outputs.sha }}
           release-dir: release
           token: ${{ vars.TEST == 'true' && secrets.TEST_FORGEJO_TOKEN || secrets.CODE_FORGEJO_TOKEN  }}
-          verbose: ${{ vars.TEST }}
+          verbose: true # ${{ vars.TEST }}
 
       - name: clear the trigger label
         if: always()
