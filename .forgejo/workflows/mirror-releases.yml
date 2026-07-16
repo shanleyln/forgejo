@@ -84,6 +84,7 @@ jobs:
           direction: download
           tag: v${{ steps.forgejo-version.outputs.patch }}
           release-dir: release
+          token: ${{ secrets.CODEBERG_TOKEN }}
           verbose: true # ${{ vars.TEST }}
 
       - name: upload release
