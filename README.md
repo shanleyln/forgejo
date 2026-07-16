@@ -23,3 +23,4 @@ Read-only mirror of the Forgejo releases and git repository. The [instructions t
   if set force a mirror of this version regardless - e.g. 7.0.5
 * vars.VERBOSE
   `set -x` or `# set -x`
+* secrets.CODEBERG_TOKEN is used to download release from codeberg because of actions/forgejo-release#186
