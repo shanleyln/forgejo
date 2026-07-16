@@ -13,15 +13,13 @@ jobs:
   release:
     if: contains(forge.event.issue.assignees.*.login, 'forgejo-read-only-issues') && forge.event.label.name == 'trigger'
     runs-on: docker
-    container:
-      image: 'code.forgejo.org/oci/debian:bookworm'
     steps:
-      - name: install wget curl jq skopeo git
+      - name: install jq skopeo
         shell: bash
         run: |
           ${{ vars.VERBOSE }}
           export DEBIAN_FRONTEND=noninteractive
-          apt-get -qq update && apt-get -q install -y -qq wget curl jq skopeo git
+          apt-get -qq update && apt-get -q install -y -qq jq skopeo
 
       - name: find the first missing version
         id: forgejo-version
