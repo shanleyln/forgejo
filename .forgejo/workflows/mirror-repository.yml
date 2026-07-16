@@ -13,8 +13,6 @@ enable-email-notifications: true
 jobs:
   mirror:
     runs-on: docker
-    container:
-      image: 'docker.io/node:20-bookworm'
     steps:
       - name: git mirror branches {v*/,}forgejo & tags
         run: |
