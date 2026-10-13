@@ -77,7 +77,7 @@ jobs:
 
       - name: download release
         if: steps.forgejo-version.outputs.patch != ''
-        uses: https://data.forgejo.org/actions/forgejo-release@v2
+        uses: https://data.forgejo.org/actions/forgejo-release@98265452477dafb3f0f27ba9c462c90b18cb44fd # v2.13.4
         with:
           url: https://codeberg.org
           repo: forgejo/forgejo
@@ -89,7 +89,7 @@ jobs:
 
       - name: upload release
         if: steps.forgejo-version.outputs.patch != ''
-        uses: https://data.forgejo.org/actions/forgejo-release@v2
+        uses: https://data.forgejo.org/actions/forgejo-release@98265452477dafb3f0f27ba9c462c90b18cb44fd # v2.13.4
         with:
           url: https://${{ vars.TEST == 'true' && vars.TEST_DESTINATION || vars.DESTINATION }}
           repo: ${{ vars.TEST == 'true' && vars.TEST_OWNER || vars.OWNER }}/forgejo
