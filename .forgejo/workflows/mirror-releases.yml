@@ -102,7 +102,7 @@ jobs:
 
       - name: clear the trigger label
         if: always()
-        uses: https://data.forgejo.org/infrastructure/issue-action/set@v1.0.0
+        uses: https://data.forgejo.org/infrastructure/issue-action/set@c66839063e70625ad4306aeb038c2a5e899af840 # v1.5.0
         with:
           forgejo: https://${{ vars.DESTINATION }}
           repository: ${{ vars.OWNER }}/forgejo
